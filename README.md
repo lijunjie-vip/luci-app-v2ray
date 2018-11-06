@@ -32,5 +32,11 @@ make menuconfig
 make package/luci-app-v2ray/compile V=99
 ```
 
+说明
+---
+1. 第一次编写openwrt插件，不是很熟练，可能会有一些问题
+2. v2ray可执行文件需要放入```/usr/bin/v2ray```目录中
+
+
  [v2ray-core]: https://github.com/v2ray/v2ray-core
  [openwrt-sdk]: https://openwrt.org/docs/guide-developer/obtain.firmware.sdk
