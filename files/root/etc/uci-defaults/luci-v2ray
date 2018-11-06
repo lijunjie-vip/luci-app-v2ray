@@ -1,0 +1,19 @@
+#!/bin/sh
+uci get v2ray.@general[-1] >/dev/null 2>&1 || \
+	uci add v2ray general >/dev/null 2>&1
+uci get v2ray.@transparent_proxy[-1] >/dev/null 2>&1 || \
+	uci add v2ray transparent_proxy >/dev/null 2>&1
+uci commit v2ray
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@v2ray[-1]
+	add ucitrack v2ray
+	set ucitrack.@v2ray[-1].init=v2ray
+	commit ucitrack
+	delete firewall.v2ray
+	set firewall.v2ray=include
+	set firewall.v2ray.type=script
+	set firewall.v2ray.path=/var/etc/v2ray.include
+	set firewall.v2ray.reload=1
+	commit firewall
+EOF
+exit 0

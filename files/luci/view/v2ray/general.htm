@@ -1,0 +1,19 @@
+<% include("cbi/map") %>
+
+<script type="text/javascript">//<![CDATA[
+(function () {
+    var elements = {
+        v2ray: document.getElementById('_v2ray_status'),
+        rules: document.getElementById('_rules_status')
+    };
+    XHR.poll(5, '<%=luci.dispatcher.build_url("admin", "services", "v2ray", "status")%>', null, function (xhr, status) {
+        if (xhr.status === 200) {
+            for (var k in elements) {
+                if (elements[k]) {
+                    elements[k].textContent = status[k] ? '<%:RUNNING%>' : '<%:NOT RUNNING%>';
+                }
+            }
+        }
+    });
+}());
+//]]></script>

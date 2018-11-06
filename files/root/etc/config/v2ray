@@ -1,0 +1,21 @@
+
+config general
+	option startup_delay '0'
+
+config transparent_proxy
+	option main_server 'nil'
+	option local_port '1080'
+	option bypass_china_addr '0'
+	option bypass_china_ip '0'
+	option mark '255'
+
+config servers
+	option alias 'sample'
+	option server '127.0.0.1'
+	option server_port '10000'
+	option alter_id '16'
+	option vmess_id '00000000-0000-0000-0000-000000000000'
+	option security 'auto'
+    option transport 'tcp'
+    option tcp_guise 'none'
+    option tls '0'

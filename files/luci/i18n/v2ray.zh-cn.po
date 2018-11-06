@@ -1,0 +1,133 @@
+# 主页
+
+msgid "Running Status"
+msgstr "运行状态"
+
+msgid "V2ray Service"
+msgstr "V2ray服务"
+
+msgid "RUNNING"
+msgstr "运行中"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+msgid "Transparent Proxy"
+msgstr "透明代理"
+
+msgid "Startup Delay"
+msgstr "自启动延时"
+
+msgid "Not enabled"
+msgstr "未启用"
+
+msgid "%u seconds"
+msgstr "%u 秒"
+
+msgid "Main Server"
+msgstr "主服务器"
+
+msgid "Local Port"
+msgstr "本地端口"
+
+msgid "MARK"
+msgstr "标记"
+
+msgid "Bypass Chinese address"
+msgstr "绕过大陆地址"
+
+msgid "Bypass Chinese IP"
+msgstr "绕过大陆IP"
+
+msgid "Avoid proxy loopback problems with local (gateway) traffic"
+msgstr "避免本地(网关)流量的代理环回问题"
+
+# 服务器管理
+
+msgid "Servers Manage"
+msgstr "服务器管理"
+
+msgid "Alias"
+msgstr "别名"
+
+msgid "Server Address"
+msgstr "服务器地址"
+
+msgid "Server Port"
+msgstr "服务器端口"
+
+msgid "Encrypt Method"
+msgstr "加密方式"
+
+# 编辑服务器
+
+msgid "Edit Server"
+msgstr "编辑服务器"
+
+msgid "Alias(optional)"
+msgstr "别名(可选)"
+
+msgid "AlterId"
+msgstr "额外ID"
+
+msgid "VmessId"
+msgstr "用户UUID"
+
+msgid "Transport"
+msgstr "传输协议"
+
+msgid "HTTP Host"
+msgstr "伪装域名"
+
+msgid "HTTP/2 Host"
+msgstr "HTTP/2域名"
+
+msgid "HTTP/2 Path"
+msgstr "HTTP/2路径"
+
+msgid "WebSocket Host"
+msgstr "WebSocket域名"
+
+msgid "WebSocket Path"
+msgstr "WebSocket路径"
+
+msgid "Camouflage Type"
+msgstr "伪装类型"
+
+msgid "VideoCall (SRTP)"
+msgstr "视频通话 (SRTP)"
+
+msgid "BitTorrent (uTP)"
+msgstr "BT下载 (uTP)"
+
+msgid "WechatVideo"
+msgstr "微信视频通话"
+
+msgid "MTU"
+msgstr "最大传输单元"
+
+msgid "TTI"
+msgstr "传输时间间隔"
+
+msgid "Uplink Capacity"
+msgstr "上行链路容量"
+
+msgid "Downlink Capacity"
+msgstr "下行链路容量"
+
+msgid "Read Buffer Size"
+msgstr "单连接读取缓冲区大小"
+
+msgid "Write Buffer Size"
+msgstr "单连接写入缓冲区大小"
+
+msgid "Congestion"
+msgstr "拥塞控制"
+
+
+
+
+
+
+
+

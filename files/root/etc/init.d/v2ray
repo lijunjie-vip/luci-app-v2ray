@@ -1,0 +1,103 @@
+#!/bin/sh /etc/rc.common
+
+START=90
+STOP=15
+
+NAME=v2ray
+EXTRA_COMMANDS=rules
+
+V2RAY="/usr/bin/v2ray/v2ray"
+GENERATE_CONF="/etc/v2ray/gen_config.lua"
+
+uci_get_by_name() {
+    local ret=$(uci get ${NAME}.$1.$2 2> /dev/null)
+    echo ${ret:=$3}
+}
+
+uci_get_by_type() {
+    local ret=$(uci get ${NAME}.@$1[0].$2 2> /dev/null)
+    echo ${ret:=$3}
+}
+
+uci_bool_by_name() {
+    case "$(uci_get_by_name $1 $2)" in
+        1 | on | true | yes | enabled) return 0 ;;
+    esac
+    return 1
+}
+
+validate_server() {
+    [[ "$(uci get ${NAME}.$1 2> /dev/null)" = "servers" ]]
+}
+
+# 生成配置文件
+gen_config_file() {
+    local config_file=/var/etc/${NAME}.$1.json
+    /usr/bin/lua ${GENERATE_CONF} > ${config_file}
+    echo ${config_file}
+}
+
+# 转16进制
+to_hex() {
+    printf 0x%x $1
+}
+
+# 准备透明代理规则
+create_rules() {
+    sleep 1s
+    pidof v2ray > /dev/null || return 0
+    # 创建链
+    iptables -t nat -N V2RAY
+    # 清空链
+    iptables -t nat -F V2RAY
+    # 忽略内网IP
+    iptables -t nat -A V2RAY -m set --match-set local dst -j RETURN || {
+        iptables -t nat -A V2RAY -d 10.0.0.0/8 -j RETURN
+        iptables -t nat -A V2RAY -d 127.0.0.0/8 -j RETURN
+        iptables -t nat -A V2RAY -d 172.16.0.0/12 -j RETURN
+        iptables -t nat -A V2RAY -d 192.168.0.0/16 -j RETURN
+        iptables -t nat -A V2RAY -d 127.0.0.0/8 -j RETURN
+        iptables -t nat -A V2RAY -d 224.0.0.0/3 -j RETURN
+    }
+    # 忽略代理IP
+    iptables -t nat -A V2RAY -p tcp -j RETURN -m mark --mark $(to_hex $(uci_get_by_type transparent_proxy mark 255))
+    # 转发至V2ray端口
+    iptables -t nat -A V2RAY -p tcp -j REDIRECT --to-ports $(uci_get_by_type transparent_proxy local_port 1080)
+    # 对局域网其他设备进行透明代理
+    iptables -t nat -A PREROUTING -p tcp -j V2RAY
+    # 对本机进行透明代理
+    iptables -t nat -A OUTPUT -p tcp -j V2RAY
+}
+
+# 删除透明代理规则
+delete_rules() {
+    iptables-save -c | grep -v "V2RAY" | iptables-restore -c
+}
+
+# 启动V2ray服务
+start_v2ray() {
+    command -v ${V2RAY} > /dev/null 2>&1 || return 1
+    local main_server=$(uci_get_by_type transparent_proxy main_server)
+    validate_server ${main_server} || return 1
+    nohup ${V2RAY} -config $(gen_config_file ${main_server}) > /dev/null 2>&1 &
+}
+
+# =====================================================================================
+
+start() {
+    config_load ${NAME}
+    pidof v2ray > /dev/null && return 0
+    mkdir -p /var/run /var/etc
+    start_v2ray && delete_rules && create_rules
+}
+
+boot() {
+    local delay=$(uci_get_by_type general startup_delay 0)
+    (sleep ${delay} && start > /dev/null 2>&1) &
+    return 0
+}
+
+stop() {
+    delete_rules
+    kill -9 $(pidof v2ray) > /dev/null 2>&1
+}
