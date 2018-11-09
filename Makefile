@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-v2ray
-PKG_VERSION:=1.0.0
+PKG_VERSION:=1.0.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPLv3
@@ -12,17 +12,15 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/luci-app-v2ray/Default
+define Package/$(PKG_NAME)
 	SECTION:=luci
 	CATEGORY:=LuCI
 	SUBMENU:=3. Applications
 	TITLE:=LuCI Support for v2ray-core
-	DEPENDS:=+coreutils-nohup +iptables $(1)
+	DEPENDS:=+coreutils-nohup +iptables
 endef
 
-Package/luci-app-v2ray = $(call Package/luci-app-v2ray/Default,+ipset)
-
-define Package/luci-app-v2ray/description
+define Package/$(PKG_NAME)/description
 	LuCI Support for v2ray-core.
 endef
 
@@ -37,7 +35,7 @@ endef
 define Build/Compile
 endef
 
-define Package/luci-app-v2ray/postinst
+define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [[ -z "$${IPKG_INSTROOT}" ]]; then
 	if [[ -f /etc/uci-defaults/luci-v2ray ]]; then
@@ -49,11 +47,11 @@ fi
 exit 0
 endef
 
-define Package/luci-app-v2ray/conffiles
+define Package/$(PKG_NAME)/conffiles
 /etc/config/v2ray
 endef
 
-define Package/luci-app-v2ray/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/v2ray.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
@@ -72,4 +70,4 @@ define Package/luci-app-v2ray/install
 	$(INSTALL_BIN) ./files/root/etc/v2ray/* $(1)/etc/v2ray/
 endef
 
-$(eval $(call BuildPackage,luci-app-v2ray))
+$(eval $(call BuildPackage,$(PKG_NAME)))
