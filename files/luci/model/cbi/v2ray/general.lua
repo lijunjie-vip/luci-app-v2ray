@@ -1,9 +1,8 @@
 local m, s, o
 local v2ray = "v2ray"
 local uci = luci.model.uci.cursor()
-local servers = {}
 
-local V2RAY = "/usr/bin/v2ray/v2ray"
+local v2ray_bin = uci:get_first(v2ray, "general", "v2ray_bin")
 
 -- 命令是否存在
 local function has_bin(name)
@@ -25,30 +24,25 @@ local function get_status(b)
     return b and translate("RUNNING") or translate("NOT RUNNING")
 end
 
-local has_v2ray = has_bin(V2RAY)
+local has_v2ray = has_bin(v2ray_bin)
 
--- 没有找到V2ray提示
-if not has_v2ray then
-    return Map(v2ray, "%s - %s" % {
-        translate("V2ray"),
-        translate("General Settings")
-    }, '<b style="color:red">v2ray-core binary file not found.</b>')
-end
-
-uci:foreach(v2ray, "servers", function(s)
-    if s.server and s.server_port then
-        servers[#servers + 1] = { name = s[".name"], alias = s.alias or "%s:%s" % { s.server, s.server_port } }
-    end
-end)
+--[[ 没有找到V2ray提示 ]] --
+--if not has_v2ray then
+--    return Map(v2ray, "%s - %s" % {
+--        translate("V2ray"),
+--        translate("General Settings")
+--    }, '<b style="color:red">v2ray-core binary file not found.</b>')
+--end
 
 m = Map(v2ray, "%s - %s" % { translate("V2ray"), translate("General Settings") })
 m.template = "v2ray/general"
 
 --[[ 运行状态 ]] --
-s = m:section(TypedSection, "general", translate("Running Status"))
-s.anonymous = true
 
 if has_v2ray then
+    s = m:section(TypedSection, "general", translate("Running Status"))
+    s.anonymous = true
+
     o = s:option(DummyValue, "_v2ray_status", translate("V2ray Service"))
     o.value = "<span id=\"_v2ray_status\">%s</span>" % { get_status(is_running('v2ray')) }
     o.rawhtml = true
@@ -62,13 +56,18 @@ end
 s = m:section(TypedSection, "general", translate("Global Settings"))
 s.anonymous = true
 
-o = s:option(Value, "startup_delay", translate("Startup Delay"))
-o:value(0, translate("Not enabled"))
-for _, v in ipairs({ 5, 10, 15, 25, 40 }) do
-    o:value(v, translatef("%u seconds", v))
+if has_v2ray then
+    o = s:option(Value, "startup_delay", translate("Startup Delay"))
+    o:value(0, translate("Not enabled"))
+    for _, v in ipairs({ 5, 10, 15, 25, 40 }) do
+        o:value(v, translatef("%u seconds", v))
+    end
+    o.datatype = "uinteger"
+    o.default = 0
+    o.rmempty = false
 end
-o.datatype = "uinteger"
-o.default = 0
+
+o = s:option(Value, "v2ray_bin", translate("V2ray Installation Path"), has_v2ray and "" or translate("File does not exist"))
 o.rmempty = false
 
 --[[ 透明代理 ]] --
@@ -79,9 +78,11 @@ if has_v2ray then
     -- 主服务器
     o = s:option(Value, "main_server", translate("Main Server"))
     o:value("nil", translate("Disable"))
-    for _, s in ipairs(servers) do
-        o:value(s.name, s.alias)
-    end
+    uci:foreach(v2ray, "servers", function(s)
+        if s.server and s.server_port then
+            o:value(s[".name"], s.alias or "%s:%s" % { s.server, s.server_port })
+        end
+    end)
     o.default = "nil"
     o.rmempty = false
 

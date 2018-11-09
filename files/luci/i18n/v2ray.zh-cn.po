@@ -18,6 +18,12 @@ msgstr "透明代理"
 msgid "Startup Delay"
 msgstr "自启动延时"
 
+msgid "V2ray Installation Path"
+msgstr "V2ray安装路径"
+
+msgid "File does not exist"
+msgstr "文件不存在"
+
 msgid "Not enabled"
 msgstr "未启用"
 

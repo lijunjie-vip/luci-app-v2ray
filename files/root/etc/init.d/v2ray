@@ -6,7 +6,6 @@ STOP=15
 NAME=v2ray
 EXTRA_COMMANDS=rules
 
-V2RAY="/usr/bin/v2ray/v2ray"
 GENERATE_CONF="/etc/v2ray/gen_config.lua"
 
 uci_get_by_name() {
@@ -76,10 +75,11 @@ delete_rules() {
 
 # 启动V2ray服务
 start_v2ray() {
-    command -v ${V2RAY} > /dev/null 2>&1 || return 1
+    v2ray_bin=$(uci_get_by_type general v2ray_bin)
+    command -v ${v2ray_bin} > /dev/null 2>&1 || return 1
     local main_server=$(uci_get_by_type transparent_proxy main_server)
     validate_server ${main_server} || return 1
-    nohup ${V2RAY} -config $(gen_config_file ${main_server}) > /dev/null 2>&1 &
+    nohup ${v2ray_bin} -config $(gen_config_file ${main_server}) > /dev/null 2>&1 &
 }
 
 # =====================================================================================
