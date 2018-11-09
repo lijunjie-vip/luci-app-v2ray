@@ -35,7 +35,7 @@ make package/luci-app-v2ray/compile V=99
 说明
 ---
 1. 第一次编写openwrt插件，不是很熟练，可能会有一些问题
-2. v2ray可执行文件需要放入```/usr/bin/v2ray```目录中
+2. v2ray可执行文件需要放入```/usr/bin/v2ray```目录中，并赋予可执行权限
 
 软件截图
 ---
